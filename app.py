@@ -25,8 +25,13 @@ BRAND_CSS = """
 html, body, .stApp, .css-18e3th9 {background:#0e0e0e; color:#ffffff;}
 
 /* Sidebar */
-.css-1d391kg {background:#202020 !important; color:#ffffff;}
-.css-1d391kg label, .stSlider>label {color:var(--taupe);} /* labels bronze/taupe */
+.css-1d391kg {background:#181818 !important; color:#ffffff;}  /* darker sidebar */
+.css-1d391kg label, .stSlider>label {color:var(--taupe);} /* label colour */
+/* Number / text inputs */
+.css-1cpxqw2 input {background:#2a2a2a !important; color:#ffffff !important; border:1px solid var(--taupe);} 
+/* Slider track & thumb */
+.stSlider > div[data-baseweb="slider"] .range-slider__bar {background:var(--bronze) !important;}
+.stSlider > div[data-baseweb="slider"] .range-slider__thumb {background:var(--taupe) !important; border:1px solid #ffffff;}  
 
 /* Headings */
 h1, h2, h3 {color:var(--bronze);} 
