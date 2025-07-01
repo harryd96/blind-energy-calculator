@@ -24,7 +24,7 @@ try:
 except Exception:
     pass
 
-st.header("Blind System – Whole‑Year Energy Impact (London)")("Blind System – Whole‑Year Energy Impact (London)")
+st.header("Blind System – Whole‑Year Energy Impact (London)")
 
 # ───────────────────── Climate Data ─────────────────────
 MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
