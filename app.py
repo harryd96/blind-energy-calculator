@@ -71,17 +71,7 @@ with right:
 st.markdown("---")
 st.header("⚙️ System Use & Environmental Inputs")
 
-movement_scenarios = {
-    "Sunny Day (6 movements)": 6,
-    "Partly Cloudy (12 movements)": 12,
-    "Fully Cloudy (2 movements)": 2,
-    "Custom": None
-}
-scenario = st.selectbox("Select Movement Scenario", list(movement_scenarios.keys()))
-if scenario == "Custom":
-    movements_per_day = st.number_input("Custom Movements/Day", value=default_values["movements_per_day"] if st.session_state.reset else 8)
-else:
-    movements_per_day = movement_scenarios[scenario]
+movements_per_day = st.number_input("Blind Movements per Day", min_value=0, value=default_values["movements_per_day"] if st.session_state.reset else 6, help="Average full open-close cycles per day across the year.")
 
 days_operated_per_year = st.number_input("Days Operated per Year", value=default_values["days_operated_per_year"] if st.session_state.reset else 260)
 window_area = st.number_input("Window Area (m²)", help="Total glazed area under analysis, excluding floors not part of this study.", value=default_values["window_area"])
@@ -112,8 +102,10 @@ solar_gain_diff = (effective_solar_gain_old - effective_solar_gain_new) * solar_
 cooling_energy_saved_kwh = solar_gain_diff * (1 / ac_efficiency) * (1 / 1000) * days_operated_per_year
 cooling_cost_saved = cooling_energy_saved_kwh * ac_cost_per_kwh
 
-heat_loss_existing = u_value_existing * window_area * (indoor_temp - outdoor_temp_winter) * 24 * days_heating / 1000
-heat_loss_new = u_value_new * window_area * (indoor_temp - outdoor_temp_winter) * 24 * days_heating / 1000
+effective_u_value_old = u_value_existing / usage_factor_old if usage_factor_old > 0 else u_value_existing
+heat_loss_existing = effective_u_value_old * window_area * (indoor_temp - outdoor_temp_winter) * 24 * days_heating / 1000
+effective_u_value_new = u_value_new / usage_factor_new if usage_factor_new > 0 else u_value_new
+heat_loss_new = effective_u_value_new * window_area * (indoor_temp - outdoor_temp_winter) * 24 * days_heating / 1000
 heat_saving_kwh = heat_loss_existing - heat_loss_new
 heating_cost_saved = heat_saving_kwh * heating_cost_per_kwh
 
