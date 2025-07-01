@@ -73,26 +73,21 @@ button[kind="secondary"]:hover {
   border-color:var(--taupe) !important;
 }
 
-/* Slider track & thumb colour override */
-.stSlider .rc-slider-track {background:var(--bronze) !important;}
-.stSlider .rc-slider-rail  {background:#333333 !important;}
+/* Slider full override */
+.stSlider .rc-slider-rail   {background:#555555 !important; height:4px;}
+.stSlider .rc-slider-track  {background:var(--bronze) !important; height:4px;}
 .stSlider .rc-slider-handle {
   background:var(--taupe) !important;
   border:2px solid #ffffff !important;
+  width:14px; height:14px; margin-top:-5px;
   box-shadow:none !important;
 }
-
-/* bar */
-.range-slider__bar {background:var(--bronze) !important;}
-/* rail */
-.range-slider__track {background:#333333 !important;}
-/* thumb */
-.range-slider__thumb {
-  background:var(--taupe) !important;
-  border:1px solid #ffffff !important;
-}
+.stSlider .rc-slider-dot {display:none;}  /* hide grey dots */
 
 /* Collapse arrow colour */
+button[title="Collapse sidebar"] svg {stroke:var(--taupe) !important;}
+
+/* ---------------- Main Content ---------------- */ colour */
 button[title="Collapse sidebar"] svg {stroke:var(--taupe) !important;}
 
 /* ---------------- Main Content ---------------- */ ---------------- */
