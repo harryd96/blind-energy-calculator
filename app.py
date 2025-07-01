@@ -32,37 +32,62 @@ html, body, .stApp {background:#0e0e0e; color:#ffffff;}
 
 /* ---------------- Sidebar ---------------- */
 aside[data-testid="stSidebar"] {
-  background:#141414 !important;
+  background:#0e0e0e !important;   /* match main body */
   color:#ffffff !important;
+  border-right:1px solid var(--bronze);
 }
-/* Sidebar section headings */
+
+/* Sidebar headings */
 aside[data-testid="stSidebar"] h2, aside[data-testid="stSidebar"] h3 {
   color:var(--bronze) !important;
   font-weight:700 !important;
   margin-top:1rem;
 }
-/* Labels */
-aside[data-testid="stSidebar"] label {color:var(--taupe) !important;}
 
-/* Input widgets */
+/* Labels & helper text */
+aside[data-testid="stSidebar"] label, aside[data-testid="stSidebar"] span {
+  color:var(--taupe) !important;
+  font-size:0.9rem;
+}
+
+/* Input boxes */
 input[type="number"], input[type="text"], select, textarea {
-  background:#1f1f1f !important;
+  background:#1a1a1a !important;
+  color:#ffffff !important;
+  border:1px solid var(--bronze) !important;
+  border-radius:4px;
+  padding:4px 6px;
+}
+input[type="number"]:focus, input[type="text"]:focus, select:focus, textarea:focus {
+  border-color:var(--taupe) !important;
+  outline:none;
+}
+
+/* Buttons (+ / -) */
+button[kind="secondary"] {
+  background:#1a1a1a !important;
   color:#ffffff !important;
   border:1px solid var(--bronze) !important;
 }
-input:focus {border-color:var(--taupe) !important;}
+button[kind="secondary"]:hover {
+  border-color:var(--taupe) !important;
+}
 
-/* Slider track & thumb */
-.stSlider > div[data-baseweb="slider"] .range-slider__bar {background:var(--bronze) !important;}
-.stSlider > div[data-baseweb="slider"] .range-slider__thumb {
+/* Slider track & thumb colour override */
+/* bar */
+.range-slider__bar {background:var(--bronze) !important;}
+/* rail */
+.range-slider__track {background:#333333 !important;}
+/* thumb */
+.range-slider__thumb {
   background:var(--taupe) !important;
   border:1px solid #ffffff !important;
 }
 
-/* Collapse arrow */
-.css-12oz5g7 {color:var(--taupe) !important;}
+/* Collapse arrow colour */
+button[title="Collapse sidebar"] svg {stroke:var(--taupe) !important;}
 
-/* ---------------- Main Content ---------------- */
+/* ---------------- Main Content ---------------- */ ---------------- */
 h1, h2, h3 {color:var(--bronze);} 
 
 table {border:1px solid var(--taupe);} 
