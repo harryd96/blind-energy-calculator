@@ -133,24 +133,17 @@ with st.sidebar:
     )
     # Separate ΔU for existing and auto-derived for new based on fabric
     delta_u_old = st.number_input(
-        "ΔU with existing blind closed (W/m²K)", 0.0, 0.5, DEFAULT["delta_u_old"], 0.01,
+        "ΔU with existing blind closed (W/m²K)",
+        0.0, 0.5, DEFAULT["delta_u_old"], 0.01,
         help=(
             "Reduction in U-value when the existing blind is fully closed. "
             "For example, U_glass 1.2 reduced to 1.05 gives ΔU=0.15."
         )
     )
-        # automatic ΔU for new fabric
+    # automatic ΔU for new fabric, derived from selection
     delta_u_new = DELTA_U_FABRIC.get(fabric_key, DEFAULT["delta_u_new"])
     st.markdown(
         f"**ΔU with new blind closed:** {delta_u_new:.2f} W/m²K (auto-derived based on fabric selection)"
-    )
-    st.markdown(
-        f"**ΔU with new blind closed:** {delta_u_new:.2f} W/m²K (auto-derived based on fabric selection)"
-    )", 0.0, 0.5, DEFAULT["delta_u_new"], 0.01,
-        help=(
-            "Reduction in U-value when the new blind fabric is closed. "
-            "Different fabrics may yield different ΔU based on material and backing."
-        )
     )
     cop = st.number_input(
         "Cooling COP", 1.0, 6.0, DEFAULT["cop"], 0.1,
@@ -169,7 +162,7 @@ with st.sidebar:
         help="Tariff rate for heating energy in £ per kWh (e.g. gas or district heating)."
     )
 
-# ───────────────────── Helper Functions ───────────────────── ─────────────────────
+# ───────────────────── Helper Functions ───────────────────── ───────────────────── ─────────────────────
 
 def motor_kwh(active, standby, usage, moves, days, n):
     """
