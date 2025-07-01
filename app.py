@@ -21,47 +21,61 @@ st.set_page_config(
 BRAND_CSS = """
 <style>
 /* —— Umbra Dark Theme —— */
-:root {--bronze:#7b7662; --taupe:#c7bb9b; --umbra-black:#000000; --row-alt:#2a2a2a;}
-html, body, .stApp, .css-18e3th9 {background:#0e0e0e; color:#ffffff;}
-
-/* Sidebar */
-.css-1d391kg {background:#141414 !important; color:#ffffff;}  /* bring sidebar closer to main bg */
-
-/* Sidebar headings */
-.css-1d391kg h2, .css-1d391kg h3 {color:var(--bronze); font-weight:700; margin-top:1.2rem;}
-
-/* Labels & text */
-.css-1d391kg label, .css-1d391kg span {color:var(--taupe);} 
-
-/* Inputs */
-.css-1cpxqw2 input, .css-1cpxqw2 select, .css-1cpxqw2 textarea {
-  background:#1f1f1f !important; color:#ffffff !important; border:1px solid var(--bronze);
+:root {
+  --bronze:#7b7662;
+  --taupe:#c7bb9b;
+  --umbra-black:#000000;
+  --row-alt:#2a2a2a;
 }
-.css-1cpxqw2 input:focus {border-color:var(--taupe);}
+
+html, body, .stApp {background:#0e0e0e; color:#ffffff;}
+
+/* ---------------- Sidebar ---------------- */
+aside[data-testid="stSidebar"] {
+  background:#141414 !important;
+  color:#ffffff !important;
+}
+/* Sidebar section headings */
+aside[data-testid="stSidebar"] h2, aside[data-testid="stSidebar"] h3 {
+  color:var(--bronze) !important;
+  font-weight:700 !important;
+  margin-top:1rem;
+}
+/* Labels */
+aside[data-testid="stSidebar"] label {color:var(--taupe) !important;}
+
+/* Input widgets */
+input[type="number"], input[type="text"], select, textarea {
+  background:#1f1f1f !important;
+  color:#ffffff !important;
+  border:1px solid var(--bronze) !important;
+}
+input:focus {border-color:var(--taupe) !important;}
 
 /* Slider track & thumb */
 .stSlider > div[data-baseweb="slider"] .range-slider__bar {background:var(--bronze) !important;}
-.stSlider > div[data-baseweb="slider"] .range-slider__thumb {background:var(--taupe) !important; border:1px solid #ffffff;}
+.stSlider > div[data-baseweb="slider"] .range-slider__thumb {
+  background:var(--taupe) !important;
+  border:1px solid #ffffff !important;
+}
 
-/* Collapse arrow colour */
-.css-12oz5g7 {color:var(--taupe);} 
+/* Collapse arrow */
+.css-12oz5g7 {color:var(--taupe) !important;}
 
-/* Headings */
- */
+/* ---------------- Main Content ---------------- */
 h1, h2, h3 {color:var(--bronze);} 
 
-/* Table styling */
 table {border:1px solid var(--taupe);} 
 thead {background-color:var(--bronze)!important; color:#ffffff!important; font-weight:600;}
 tbody tr:nth-child(even){background:var(--row-alt);} 
 
 td, th {padding:6px 10px;}
-/* Align numeric columns right */
-td:nth-child(2), td:nth-child(3), td:nth-child(4){text-align:right;}
+/* right align numerics */
+td:nth-child(2), td:nth-child(3), td:nth-child(4) {text-align:right;}
 
 /* Alerts */
-.stAlert.success{background:#143d1d; border-left:6px solid var(--bronze);} 
-.stAlert.warning{background:#3d3614; border-left:6px solid var(--taupe);}  
+.stAlert.success   {background:#143d1d; border-left:6px solid var(--bronze);} 
+.stAlert.warning   {background:#3d3614; border-left:6px solid var(--taupe);}  
 </style>
 """
 
