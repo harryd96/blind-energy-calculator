@@ -25,15 +25,29 @@ BRAND_CSS = """
 html, body, .stApp, .css-18e3th9 {background:#0e0e0e; color:#ffffff;}
 
 /* Sidebar */
-.css-1d391kg {background:#181818 !important; color:#ffffff;}  /* darker sidebar */
-.css-1d391kg label, .stSlider>label {color:var(--taupe);} /* label colour */
-/* Number / text inputs */
-.css-1cpxqw2 input {background:#2a2a2a !important; color:#ffffff !important; border:1px solid var(--taupe);} 
+.css-1d391kg {background:#141414 !important; color:#ffffff;}  /* bring sidebar closer to main bg */
+
+/* Sidebar headings */
+.css-1d391kg h2, .css-1d391kg h3 {color:var(--bronze); font-weight:700; margin-top:1.2rem;}
+
+/* Labels & text */
+.css-1d391kg label, .css-1d391kg span {color:var(--taupe);} 
+
+/* Inputs */
+.css-1cpxqw2 input, .css-1cpxqw2 select, .css-1cpxqw2 textarea {
+  background:#1f1f1f !important; color:#ffffff !important; border:1px solid var(--bronze);
+}
+.css-1cpxqw2 input:focus {border-color:var(--taupe);}
+
 /* Slider track & thumb */
 .stSlider > div[data-baseweb="slider"] .range-slider__bar {background:var(--bronze) !important;}
-.stSlider > div[data-baseweb="slider"] .range-slider__thumb {background:var(--taupe) !important; border:1px solid #ffffff;}  
+.stSlider > div[data-baseweb="slider"] .range-slider__thumb {background:var(--taupe) !important; border:1px solid #ffffff;}
+
+/* Collapse arrow colour */
+.css-12oz5g7 {color:var(--taupe);} 
 
 /* Headings */
+ */
 h1, h2, h3 {color:var(--bronze);} 
 
 /* Table styling */
