@@ -74,6 +74,14 @@ button[kind="secondary"]:hover {
 }
 
 /* Slider track & thumb colour override */
+.stSlider .rc-slider-track {background:var(--bronze) !important;}
+.stSlider .rc-slider-rail  {background:#333333 !important;}
+.stSlider .rc-slider-handle {
+  background:var(--taupe) !important;
+  border:2px solid #ffffff !important;
+  box-shadow:none !important;
+}
+
 /* bar */
 .range-slider__bar {background:var(--bronze) !important;}
 /* rail */
