@@ -158,4 +158,37 @@ st.table(_st_motor)
 # Thermal performance table
 st.subheader("Thermal Performance 🏢")
 _st_therm = pd.DataFrame({
-    "Existing": [fmt(cool_old), cur(cost_cool_old), fmt(heat_old), cur(cost_heat_old)],
+    "Existing": [fmt(cool_old),  cur(cost_cool_old),  fmt(heat_old),  cur(cost_heat_old)],
+    "New":      [fmt(cool_new),  cur(cost_cool_new),  fmt(heat_new),  cur(cost_heat_new)],
+    "Savings":  [fmt(cool_old - cool_new), cur(cost_cool_old - cost_cool_new),
+                  fmt(heat_old - heat_new), cur(cost_heat_old - cost_heat_new)],
+}, index=["Cooling kWh / yr", "Cooling £ / yr", "Heating kWh / yr", "Heating £ / yr"])
+st.table(_st_therm)
+
+# Totals (energy & cost)
+energy_saved = (motor_old_kwh - motor_new_kwh) + (cool_old - cool_new) + (heat_old - heat_new)
+cost_saved   = (cost_motor_old - cost_motor_new) + (cost_cool_old - cost_cool_new) + (cost_heat_old - cost_heat_new)
+
+st.markdown(f"### 💰 **Total Annual Energy Saved:** {fmt(energy_saved)} kWh")
+st.markdown(f"### 💰 **Total Annual Cost Saved:** {cur(cost_saved)}")
+
+if cost_saved > 0:
+    st.success("New system delivers annual cost & energy savings under current assumptions.")
+else:
+    st.warning("New system increases annual cost. Adjust inputs or usage assumptions.")
+
+# Carbon Impact Section
+st.subheader("Carbon Impact 🌳")
+st.markdown(
+    f"**CO₂ Saved:** {fmt(co2_total_t)} t CO₂ / year  "+
+    f"(≈ {fmt(co2_total_kg)} kg)
+
+"+
+    f"**Equivalent to:**  "+
+    f"- {TREES_EQ:,} mature trees absorbing CO₂ for a year  
+"+
+    f"- Avoiding {FLIGHTS_EQ:,} London‑NYC return flights (economy)  
+"
+)
+
+st.caption("Monthly GHI & HDD: London St James’s Park TMY | CO₂ factors: UK Grid 2024 avg & Natural Gas (UK) | Tree absorption ≈22 kg CO₂/yr.")
