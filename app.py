@@ -40,7 +40,9 @@ DEFAULT = dict(
     motor_old=120, motor_new=10, standby=0.5, moves=6,
     blinds=1000, days=260,
     usage_old=0.80, usage_new=1.00,
-    shade_eff=0.90, u_glass=1.2, delta_u=0.15,
+    shade_eff=0.90, u_glass=1.2,
+    # Separate ΔU defaults for existing and new systems
+    delta_u_old=0.15, delta_u_new=0.15,
     cop=3.0,
     c_ele=0.20, c_heat=0.10,
 )
@@ -124,12 +126,19 @@ with st.sidebar:
             "double glazing ~1.2)."
         )
     )
-    delta_u = st.number_input(
-        "ΔU with blind closed", 0.0, 0.5, DEFAULT["delta_u"], 0.01,
+    # Now separate ΔU inputs for old and new
+    delta_u_old = st.number_input(
+        "ΔU with existing blind closed (W/m²K)", 0.0, 0.5, DEFAULT["delta_u_old"], 0.01,
         help=(
-            "Reduction in U-value when the blind is fully closed (W/m²K). "
-            "Calculated as U_glass - U_with_blind. For example, closing a blind might "
-            "reduce U from 1.2 to 1.05, giving ΔU=0.15."
+            "Reduction in U-value when the existing blind is fully closed. "
+            "For example, U_glass 1.2 reduced to 1.05 gives ΔU=0.15."
+        )
+    )
+    delta_u_new = st.number_input(
+        "ΔU with new blind closed (W/m²K)", 0.0, 0.5, DEFAULT["delta_u_new"], 0.01,
+        help=(
+            "Reduction in U-value when the new blind fabric is closed. "
+            "Different fabrics may yield different ΔU based on material and backing."
         )
     )
     cop = st.number_input(
@@ -149,7 +158,7 @@ with st.sidebar:
         help="Tariff rate for heating energy in £ per kWh (e.g. gas or district heating)."
     )
 
-# ───────────────────── Helper Functions ─────────────────────
+# ───────────────────── Helper Functions ───────────────────── ─────────────────────
 
 def motor_kwh(active, standby, usage, moves, days, n):
     """
@@ -170,8 +179,8 @@ solar_gain_old = SHGC_OLD * (1 - usage_old * shade_eff) * irradiance * area
 solar_gain_new = shgc_new * (1 - usage_new * shade_eff) * irradiance * area
 cool_old, cool_new = (solar_gain_old / cop).sum(), (solar_gain_new / cop).sum()
 
-U_old = u_glass - usage_old * delta_u
-U_new = u_glass - usage_new * delta_u
+U_old = u_glass - usage_old * delta_u_old
+U_new = u_glass - usage_new * delta_u_new
 heat_old = (U_old * area * hdd * 24 / 1000).sum()
 heat_new = (U_new * area * hdd * 24 / 1000).sum()
 
