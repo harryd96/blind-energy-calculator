@@ -19,14 +19,20 @@ BRAND_CSS = """
 <style>
 :root {--bronze:#7b7662; --taupe:#c7bb9b; --row-alt:#2a2a2a;}
 html, body, .stApp {background:#0e0e0e; color:#ffffff; font-family:Inter, sans-serif;}
-h1, h2, h3 {color:var(--bronze);} 
+h1, h2, h3 {color:var(--bronze); font-size:1.6rem;} 
+h2 {font-size:1.4rem;}
+h3 {font-size:1.2rem;}
 
+section[data-testid="stSidebar"] h1, h2, h3, h4 {font-size:1.1rem; color:#ffffff;}
+
+/* Tables */
 table {border:1px solid var(--taupe);} 
 thead {background-color:var(--bronze)!important; color:#ffffff!important; font-weight:600;}
 tbody tr:nth-child(even){background:var(--row-alt);} 
 td, th {padding:6px 8px; font-size:0.9rem;}
 td:nth-child(2), td:nth-child(3), td:nth-child(4){text-align:right;}
 
+/* Alerts */
 .stAlert.success {background:#143d1d; border-left:6px solid var(--bronze);} 
 .stAlert.warning {background:#3d3614; border-left:6px solid var(--taupe);}  
 </style>
@@ -173,3 +179,5 @@ st.markdown(f"🌳 Equivalent to saving emissions from ~{TREES_EQ} mature trees"
 st.markdown(f"✈️ Or avoiding ~{FLIGHTS_EQ} London–NYC round‑trip flights")
 
 st.caption("Monthly GHI & HDD source: London St James’s Park TMY · All £, kWh & CO₂ rounded to two decimals.")
+
+st.caption("\nDisclaimer: This model is a simplified energy estimation tool. It does not account for real-world variables such as occupancy patterns, equipment usage, or seasonal shading strategies. It should not be used to predict actual energy bills or carbon savings with precision. For detailed assessments, a full building energy simulation is recommended.")
