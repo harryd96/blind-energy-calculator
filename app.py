@@ -142,9 +142,6 @@ with col4:
     st.write(f"{heat_saving_kwh:.1f} kWh/year")
     st.write(f"£{heating_cost_saved:.2f}/year")
 
-st.write(f"**Cooling Cost Saved**: £{cooling_cost_saved:.2f}/year")
-st.write(f"**Heating Energy Saved**: {heat_saving_kwh:.1f} kWh/year")
-st.write(f"**Heating Cost Saved**: £{heating_cost_saved:.2f}/year")
 
 st.markdown("---")
 
