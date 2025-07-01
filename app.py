@@ -133,14 +133,22 @@ with col2:
 st.subheader("🌡️ Energy Savings through Reduced Cooling and Heating")
 col3, col4 = st.columns(2)
 with col3:
-    st.markdown("**Cooling Energy Saved**")
-    st.write(f"{cooling_energy_saved_kwh:.1f} kWh/year")
-    st.write(f"£{cooling_cost_saved:.2f}/year")
+    st.markdown("**Cooling Performance**")
+    cooling_energy_old = effective_solar_gain_old * solar_radiation_summer * window_area * (1 / ac_efficiency) * (1 / 1000) * days_operated_per_year
+    cooling_energy_new = effective_solar_gain_new * solar_radiation_summer * window_area * (1 / ac_efficiency) * (1 / 1000) * days_operated_per_year
+    cooling_cost_old = cooling_energy_old * ac_cost_per_kwh
+    cooling_cost_new = cooling_energy_new * ac_cost_per_kwh
+    st.write(f"Existing System: {cooling_energy_old:.1f} kWh/year → £{cooling_cost_old:.2f}/year")
+    st.write(f"New System: {cooling_energy_new:.1f} kWh/year → £{cooling_cost_new:.2f}/year")
+    st.write(f"**Cooling Energy Saved**: {cooling_energy_saved_kwh:.1f} kWh/year")
+    st.write(f"**Cooling Cost Saved**: £{cooling_cost_saved:.2f}/year")
 
 with col4:
-    st.markdown("**Heating Energy Saved**")
-    st.write(f"{heat_saving_kwh:.1f} kWh/year")
-    st.write(f"£{heating_cost_saved:.2f}/year")
+    st.markdown("**Heating Performance**")
+    st.write(f"Existing System: {heat_loss_existing:.1f} kWh/year → £{heat_loss_existing * heating_cost_per_kwh:.2f}/year")
+    st.write(f"New System: {heat_loss_new:.1f} kWh/year → £{heat_loss_new * heating_cost_per_kwh:.2f}/year")
+    st.write(f"**Heating Energy Saved**: {heat_saving_kwh:.1f} kWh/year")
+    st.write(f"**Heating Cost Saved**: £{heating_cost_saved:.2f}/year")
 
 
 st.markdown("---")
