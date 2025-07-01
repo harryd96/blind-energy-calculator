@@ -26,6 +26,9 @@ BRAND_CSS = """
   --taupe:#c7bb9b;
   --umbra-black:#000000;
   --row-alt:#2a2a2a;
+  /* Streamlit accent override */
+  --primary-color:#7b7662;
+  --primary-color-light:#9e9984;
 }
 
 html, body, .stApp {background:#0e0e0e; color:#ffffff;}
@@ -73,16 +76,22 @@ button[kind="secondary"]:hover {
   border-color:var(--taupe) !important;
 }
 
-/* Slider full override */
-.stSlider .rc-slider-rail   {background:#555555 !important; height:4px;}
-.stSlider .rc-slider-track  {background:var(--bronze) !important; height:4px;}
-.stSlider .rc-slider-handle {
+/* Slider override (for Streamlit ≥1.30) */
+.stSlider [role="slider"] {
   background:var(--taupe) !important;
   border:2px solid #ffffff !important;
-  width:14px; height:14px; margin-top:-5px;
+  width:14px; height:14px;
   box-shadow:none !important;
 }
-.stSlider .rc-slider-dot {display:none;}  /* hide grey dots */
+.stSlider div[data-baseweb="slider"] > div:nth-child(2) { /* track */
+  background:var(--bronze) !important;
+  height:4px;
+}
+.stSlider div[data-baseweb="slider"] > div:first-child { /* rail */
+  background:#444 !important;
+  height:4px;
+}
+  /* hide grey dots */
 
 /* Collapse arrow colour */
 button[title="Collapse sidebar"] svg {stroke:var(--taupe) !important;}
