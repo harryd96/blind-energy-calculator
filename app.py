@@ -20,32 +20,29 @@ st.set_page_config(
 
 BRAND_CSS = """
 <style>
-/* —— Umbra Light Theme —— */
-html, body, .stApp, .css-18e3th9 {background:#ffffff; color:#000000;}
-/* light grey sidebar background */
-.css-1d391kg {background:#f7f7f7 !important;}
-/* keep left pane scrollbar track light */
-.css-1d391kg::-webkit-scrollbar-track {background:#f7f7f7;}
+/* —— Umbra Dark Theme —— */
+:root {--bronze:#7b7662; --taupe:#c7bb9b; --umbra-black:#000000; --row-alt:#2a2a2a;}
+html, body, .stApp, .css-18e3th9 {background:#0e0e0e; color:#ffffff;}
 
-h1,h2,h3 {color:var(--bronze); font-weight:700;}
-label, .stSlider>label {color:var(--bronze);}  /* sidebar labels */
+/* Sidebar */
+.css-1d391kg {background:#202020 !important; color:#ffffff;}
+.css-1d391kg label, .stSlider>label {color:var(--taupe);} /* labels bronze/taupe */
 
-/* Table styling */
-thead {
-  background-color:var(--bronze)!important;
-  color:#ffffff!important;
-  font-weight:600;
-}
-tbody tr:nth-child(even) {background:var(--row-alt);}  /* subtle alt rows */
+/* Headings */
+h1, h2, h3 {color:var(--bronze);} 
+
+/* Table styling */
 table {border:1px solid var(--taupe);} 
-td, th {padding:6px 10px;}
+thead {background-color:var(--bronze)!important; color:#ffffff!important; font-weight:600;}
+tbody tr:nth-child(even){background:var(--row-alt);} 
 
-/* Numerical cells right‑aligned */
+td, th {padding:6px 10px;}
+/* Align numeric columns right */
 td:nth-child(2), td:nth-child(3), td:nth-child(4){text-align:right;}
 
-/* Alert boxes */
-.stAlert.success{background:#f0f9f2; border-left:6px solid var(--bronze);} 
-.stAlert.warning{background:#fffbe8; border-left:6px solid var(--taupe);} 
+/* Alerts */
+.stAlert.success{background:#143d1d; border-left:6px solid var(--bronze);} 
+.stAlert.warning{background:#3d3614; border-left:6px solid var(--taupe);}  
 </style>
 """
 
