@@ -55,17 +55,17 @@ left, right = st.columns(2)
 
 with left:
     st.header("🚫 Existing System")
-    motor_power_old = st.number_input("Motor Power (W) - Active", value=default_values["motor_power_old"] if st.session_state.reset else 120)
-    usage_factor_old = st.slider("Estimated Usage (% Floors Active)", min_value=0.0, max_value=1.0, value=default_values["usage_factor_old"] if st.session_state.reset else 0.8)
-    solar_gain_existing = st.number_input("Solar Heat Gain Coefficient", value=default_values["solar_gain_existing"] if st.session_state.reset else 0.12, key="sge")
-    u_value_existing = st.number_input("U-Value (W/m²K)", value=default_values["u_value_existing"] if st.session_state.reset else 1.2, key="uve")
+    motor_power_old = st.number_input("Motor Power (W) - Active", help="Power consumed by the motor when moving the blinds.", value=default_values["motor_power_old"] if st.session_state.reset else 120)
+    usage_factor_old = st.slider("Estimated Usage (% Floors Active)", help="Proportion of floors where automation is actively used.", min_value=0.0, max_value=1.0, value=default_values["usage_factor_old"] if st.session_state.reset else 0.8)
+    solar_gain_existing = st.number_input("Solar Heat Gain Coefficient", help="Fraction of incoming solar radiation admitted through the blinds and glass.", value=default_values["solar_gain_existing"], key="sge")
+    u_value_existing = st.number_input("U-Value (W/m²K)", help="Thermal transmittance indicating heat loss through the window system.", value=default_values["u_value_existing"], key="uve")
 
 with right:
     st.header("✅ New System")
     motor_power_new = st.number_input("Motor Power (W) - Active", value=default_values["motor_power_new"] if st.session_state.reset else 10)
     usage_factor_new = st.slider("Estimated Usage (% Floors Active)", min_value=0.0, max_value=1.0, value=default_values["usage_factor_new"] if st.session_state.reset else 1.0)
-    solar_gain_new = st.number_input("Solar Heat Gain Coefficient", value=default_values["solar_gain_new"] if st.session_state.reset else 0.06, key="sgn")
-    u_value_new = st.number_input("U-Value (W/m²K)", value=default_values["u_value_new"] if st.session_state.reset else 1.0, key="uvn")
+    solar_gain_new = st.number_input("Solar Heat Gain Coefficient", value=default_values["solar_gain_new"], key="sgn")
+    u_value_new = st.number_input("U-Value (W/m²K)", value=default_values["u_value_new"], key="uvn")
 
 # Shared Inputs
 st.markdown("---")
@@ -84,14 +84,14 @@ else:
     movements_per_day = movement_scenarios[scenario]
 
 days_operated_per_year = st.number_input("Days Operated per Year", value=default_values["days_operated_per_year"] if st.session_state.reset else 260)
-window_area = st.number_input("Window Area (m²)", value=default_values["window_area"] if st.session_state.reset else 1000)
-solar_radiation_summer = st.number_input("Solar Radiation Summer Avg (W/m²)", value=default_values["solar_radiation_summer"] if st.session_state.reset else 400)
-ac_efficiency = st.number_input("AC Efficiency (COP)", value=default_values["ac_efficiency"] if st.session_state.reset else 3.0)
-ac_cost_per_kwh = st.number_input("Cooling Electricity Cost (£/kWh)", value=default_values["ac_cost_per_kwh"] if st.session_state.reset else 0.20)
-indoor_temp = st.number_input("Indoor Temp (°C)", value=default_values["indoor_temp"] if st.session_state.reset else 21)
-outdoor_temp_winter = st.number_input("Winter Outdoor Temp (°C)", value=default_values["outdoor_temp_winter"] if st.session_state.reset else 5)
-days_heating = st.number_input("Heating Days/Year", value=default_values["days_heating"] if st.session_state.reset else 180)
-heating_cost_per_kwh = st.number_input("Heating Energy Cost (£/kWh)", value=default_values["heating_cost_per_kwh"] if st.session_state.reset else 0.10)
+window_area = st.number_input("Window Area (m²)", help="Total glazed area under analysis, excluding floors not part of this study.", value=default_values["window_area"])
+solar_radiation_summer = st.number_input("Solar Radiation Summer Avg (W/m²)", help="Average daily solar radiation expected on the facade during summer.", value=default_values["solar_radiation_summer"] if st.session_state.reset else 400)
+ac_efficiency = st.number_input("AC Efficiency (COP)", help="Cooling system efficiency: ratio of cooling output to energy input.", value=default_values["ac_efficiency"] if st.session_state.reset else 3.0)
+ac_cost_per_kwh = st.number_input("Cooling Electricity Cost (£/kWh)", help="Electricity cost per kWh for operating cooling systems.", value=default_values["ac_cost_per_kwh"] if st.session_state.reset else 0.20)
+indoor_temp = st.number_input("Indoor Temp (°C)", help="Target indoor temperature during heating season.", value=default_values["indoor_temp"] if st.session_state.reset else 21)
+outdoor_temp_winter = st.number_input("Winter Outdoor Temp (°C)", help="Average external temperature during heating season.", value=default_values["outdoor_temp_winter"] if st.session_state.reset else 5)
+days_heating = st.number_input("Heating Days/Year", help="Estimated number of days when the building requires heating.", value=default_values["days_heating"] if st.session_state.reset else 180)
+heating_cost_per_kwh = st.number_input("Heating Energy Cost (£/kWh)", help="Energy cost per kWh for heating provision.", value=default_values["heating_cost_per_kwh"] if st.session_state.reset else 0.10)
 standby_power = default_values["standby_power"]
 
 # Reset state flag after applying
