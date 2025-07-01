@@ -21,12 +21,12 @@ st.set_page_config(
 BRAND_CSS = """
 <style>
 /* —— Umbra Light Theme —— */
-html, body {background:#ffffff; color:#000000;}
-#MainMenu, header, footer {visibility:hidden;}
-.block-container {padding-top:1rem; padding-bottom:1rem;}
-:root {--bronze:#7b7662; --taupe:#c7bb9b; --umbra-black:#000000; --row-alt:#f9f9f7;}
+html, body, .stApp, .css-18e3th9 {background:#ffffff; color:#000000;}
+/* light grey sidebar background */
+.css-1d391kg {background:#f7f7f7 !important;}
+/* keep left pane scrollbar track light */
+.css-1d391kg::-webkit-scrollbar-track {background:#f7f7f7;}
 
-/* headings & section titles */
 h1,h2,h3 {color:var(--bronze); font-weight:700;}
 label, .stSlider>label {color:var(--bronze);}  /* sidebar labels */
 
