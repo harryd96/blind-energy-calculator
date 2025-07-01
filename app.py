@@ -65,39 +65,39 @@ with st.sidebar:
         "Window Area (m²)",
         value=DEFAULT["area"],
         step=500,
-        help="Total glazed window area for shading calculations"
+        help="Total glazed window area (m²) used to calculate solar and heat gains."
     )
 
     st.subheader("Blind Usage (fraction of beneficial hours closed)")
     usage_old = st.slider(
         "Existing system", 0.0, 1.0, DEFAULT["usage_old"], 0.05,
-        help="Fraction of time existing blinds are used when beneficial"
+        help="Fraction of daylight hours the existing blinds are closed when solar shading is beneficial (e.g. 0.8 means 80% of sunny periods)."
     )
     usage_new = st.slider(
         "New system", 0.0, 1.0, DEFAULT["usage_new"], 0.05,
-        help="Fraction of time new blinds are used when beneficial"
+        help="Fraction of daylight hours the new automated blinds are closed when shading yields energy savings."
     )
 
     st.subheader("Motor & Movements")
     motor_old = st.number_input(
         "Motor Power – OLD (W)", 1, 500, DEFAULT["motor_old"],
-        help="Rated power draw of the old blind motor"
+        help="Power draw of the existing blind motor in Watts during operation. Typical range: 50–150 W."
     )
     motor_new = st.number_input(
         "Motor Power – NEW (W)", 1, 500, DEFAULT["motor_new"],
-        help="Rated power draw of the new blind motor"
+        help="Power draw of the new blind motor in Watts. Lower values indicate more efficient motors (e.g. 10–50 W)."
     )
     standby = st.number_input(
         "Stand‑by Power (W)", 0.0, 5.0, DEFAULT["standby"], 0.1,
-        help="Standby power draw when motor is idle"
+        help="Idle power consumption of the motor when not moving (e.g. 0.1–1 W)."
     )
     moves_day = st.number_input(
         "Movements per blind per day", 0, 20, DEFAULT["moves"],
-        help="Number of open/close cycles per blind each day"
+        help="Number of open/close cycles each blind performs daily (e.g. business hours operation might be 6–10 cycles)."
     )
     n_blinds = st.number_input(
         "Quantity of blinds", 1, 10_000, DEFAULT["blinds"],
-        help="Total number of automated blinds installed"
+        help="Total number of automated blinds in the building or installation."
     )
 
     st.subheader("Fabric Selection")
@@ -107,34 +107,46 @@ with st.sidebar:
     shgc_new = NEW_FABRICS[
         st.selectbox(
             "New blind fabric", list(NEW_FABRICS.keys()),
-            help="Select fabric option for new blind with SHGC rating"
+            help="Select the new fabric option by Solar Heat Gain Coefficient (SHGC). Lower SHGC means less solar heat transmitted."
         )
     ]
 
     st.subheader("Thermal & Economic")
     shade_eff = st.slider(
         "Shade effectiveness", 0.0, 1.0, DEFAULT["shade_eff"], 0.05,
-        help="Effectiveness factor of the shade in reducing solar gain"
+        help="Proportion of solar irradiance blocked by the blind when closed (e.g. 0.9 means 90% blocking)."
     )
     u_glass = st.number_input(
         "Bare glass U (W/m²K)", 0.5, 3.0, DEFAULT["u_glass"], 0.05,
-        help="Thermal transmittance of the bare window glazing"
+        help=(
+            "Thermal transmittance of the bare glazing measured in W/m²K. "
+            "Lower U-values indicate better insulation (e.g. single glazing ~5.8, "
+            "double glazing ~1.2)."
+        )
     )
     delta_u = st.number_input(
         "ΔU with blind closed", 0.0, 0.5, DEFAULT["delta_u"], 0.01,
-        help="Reduction in U-value when blind is fully closed"
+        help=(
+            "Reduction in U-value when the blind is fully closed (W/m²K). "
+            "Calculated as U_glass - U_with_blind. For example, closing a blind might "
+            "reduce U from 1.2 to 1.05, giving ΔU=0.15."
+        )
     )
     cop = st.number_input(
         "Cooling COP", 1.0, 6.0, DEFAULT["cop"], 0.1,
-        help="Coefficient Of Performance for cooling system"
+        help=(
+            "Coefficient Of Performance of the cooling system: ratio of cooling output (kWh) "
+            "to electrical input (kWh). Typical COPs range 2–6; e.g. COP=3 means 1 kWh "
+            "electricity delivers 3 kWh cooling."
+        )
     )
     c_ele = st.number_input(
         "Electricity £/kWh", 0.05, 0.50, DEFAULT["c_ele"], 0.01,
-        help="Cost of electricity per kilowatt-hour"
+        help="Tariff rate for electricity in £ per kWh. Use local utility rate."
     )
     c_heat = st.number_input(
         "Heating £/kWh", 0.03, 0.30, DEFAULT["c_heat"], 0.01,
-        help="Cost of heating energy per kilowatt-hour"
+        help="Tariff rate for heating energy in £ per kWh (e.g. gas or district heating)."
     )
 
 # ───────────────────── Helper Functions ─────────────────────
@@ -188,7 +200,7 @@ TREES_EQ = int(round(co2_total_kg / TREE_CO2))
 FLIGHTS_EQ = int(round(co2_total_t / FLIGHT_CO2))
 
 # ───────────────────── Outputs ─────────────────────
-st.header("Results & Savings")
+st.header("Results & Savings")
 
 st.subheader("Motor Consumption")
 motor_df = pd.DataFrame({
@@ -260,7 +272,7 @@ st.markdown(
 )
 
 st.caption(
-    "Monthly GHI & HDD source: London St James’s Park TMY · All £, kWh & CO₂ rounded to two decimals."
+    "Monthly GHI & HDD source: London St James’s Park TMY · All £, kWh & CO₂ rounded to two decimals."
 )
 
 st.caption(
