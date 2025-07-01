@@ -20,101 +20,29 @@ st.set_page_config(
 
 BRAND_CSS = """
 <style>
-/* —— Umbra Dark Theme —— */
+/* —— Umbra Dark Theme (minimal sidebar overrides) —— */
 :root {
   --bronze:#7b7662;
   --taupe:#c7bb9b;
   --umbra-black:#000000;
   --row-alt:#2a2a2a;
-  /* Streamlit accent override */
-  --primary-color:#7b7662;
-  --primary-color-light:#9e9984;
 }
 
 html, body, .stApp {background:#0e0e0e; color:#ffffff;}
 
-/* ---------------- Sidebar ---------------- */
-aside[data-testid="stSidebar"] {
-  background:#0e0e0e !important;   /* match main body */
-  color:#ffffff !important;
-  border-right:1px solid var(--bronze);
-}
-
-/* Sidebar headings */
-aside[data-testid="stSidebar"] h2, aside[data-testid="stSidebar"] h3 {
-  color:var(--bronze) !important;
-  font-weight:700 !important;
-  margin-top:1rem;
-}
-
-/* Labels & helper text */
-aside[data-testid="stSidebar"] label, aside[data-testid="stSidebar"] span {
-  color:var(--taupe) !important;
-  font-size:0.9rem;
-}
-
-/* Input boxes */
-input[type="number"], input[type="text"], select, textarea {
-  background:#1a1a1a !important;
-  color:#ffffff !important;
-  border:1px solid var(--bronze) !important;
-  border-radius:4px;
-  padding:4px 6px;
-}
-input[type="number"]:focus, input[type="text"]:focus, select:focus, textarea:focus {
-  border-color:var(--taupe) !important;
-  outline:none;
-}
-
-/* Buttons (+ / -) */
-button[kind="secondary"] {
-  background:#1a1a1a !important;
-  color:#ffffff !important;
-  border:1px solid var(--bronze) !important;
-}
-button[kind="secondary"]:hover {
-  border-color:var(--taupe) !important;
-}
-
-/* Slider override (for Streamlit ≥1.30) */
-.stSlider [role="slider"] {
-  background:var(--taupe) !important;
-  border:2px solid #ffffff !important;
-  width:14px; height:14px;
-  box-shadow:none !important;
-}
-.stSlider div[data-baseweb="slider"] > div:nth-child(2) { /* track */
-  background:var(--bronze) !important;
-  height:4px;
-}
-.stSlider div[data-baseweb="slider"] > div:first-child { /* rail */
-  background:#444 !important;
-  height:4px;
-}
-  /* hide grey dots */
-
-/* Collapse arrow colour */
-button[title="Collapse sidebar"] svg {stroke:var(--taupe) !important;}
-
-/* ---------------- Main Content ---------------- */ colour */
-button[title="Collapse sidebar"] svg {stroke:var(--taupe) !important;}
-
-/* ---------------- Main Content ---------------- */ ---------------- */
+/* Headings */
 h1, h2, h3 {color:var(--bronze);} 
 
-table {border:1px solid var(--taupe);} 
-thead {background-color:var(--bronze)!important; color:#ffffff!important; font-weight:600;}
-tbody tr:nth-child(even){background:var(--row-alt);} 
-
-td, th {padding:6px 10px;}
-/* right align numerics */
-td:nth-child(2), td:nth-child(3), td:nth-child(4) {text-align:right;}
+/* Tables */
+ table               {border:1px solid var(--taupe);} 
+ thead               {background-color:var(--bronze)!important; color:#ffffff!important; font-weight:600;}
+ tbody tr:nth-child(even){background:var(--row-alt);} 
+ td, th             {padding:6px 10px;}
+ td:nth-child(2), td:nth-child(3), td:nth-child(4){text-align:right;}
 
 /* Alerts */
-.stAlert.success   {background:#143d1d; border-left:6px solid var(--bronze);} 
-.stAlert.warning   {background:#3d3614; border-left:6px solid var(--taupe);}  
-</style>
-"""
+.stAlert.success {background:#143d1d; border-left:6px solid var(--bronze);} 
+.stAlert.warning {background:#3d3614; border-left:6px solid var(--taupe);}
 
 st.markdown(BRAND_CSS, unsafe_allow_html=True)
 
@@ -125,7 +53,7 @@ try:
 except Exception:
     st.write("<b>UMBRA&</b>", unsafe_allow_html=True)
 
-st.title("Blind System – Whole‑Year Energy Impact (London)")
+st.title("Shading at The Shard – Whole‑Year Energy Impact")
 
 # ───────────────────── Climate Data (monthly) ─────────────────────
 MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
