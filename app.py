@@ -17,15 +17,20 @@ st.set_page_config(
 
 # ───────────────────── Logo & Title ─────────────────────
 try:
+    try:
     st.image(
         Image.open("umbra_logo_white_rgb.png"),
+        width=220
+    )
+except Exception:
+    st.write("UMBRA &"),
         width=220,
         caption="Umbra Logo"
     )
 except Exception:
     st.write("UMBRA &")
 
-st.title("Blind System – Whole‑Year Energy Impact (London)")
+st.header("Blind System – Whole‑Year Energy Impact (London)")
 
 # ───────────────────── Climate Data ─────────────────────
 MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
