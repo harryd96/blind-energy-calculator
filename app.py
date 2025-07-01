@@ -15,20 +15,32 @@ st.set_page_config(page_title="Shard Blind Energy", layout="wide")
 
 BRAND_CSS = """
 <style>
+/* —— Umbra Light Theme —— */
+html, body {background:#ffffff; color:#000000;}
 #MainMenu, header, footer {visibility:hidden;}
 .block-container {padding-top:1rem; padding-bottom:1rem;}
-:root {--bronze:#7b7662; --taupe:#c7bb9b; --umbra-black:#000000;}
+:root {--bronze:#7b7662; --taupe:#c7bb9b; --umbra-black:#000000; --row-alt:#f9f9f7;}
 
-h1,h2,h3 {color:var(--bronze);}  /* headings */
+/* headings & section titles */
+h1,h2,h3 {color:var(--bronze); font-weight:700;}
 label, .stSlider>label {color:var(--bronze);}  /* sidebar labels */
 
-/* Table styling */
-thead {background-color:var(--taupe)!important; color:var(--umbra-black)!important; font-weight:600;}
-tbody tr:nth-child(even) {background:#f5f5f5;}
+/* Table styling */
+thead {
+  background-color:var(--bronze)!important;
+  color:#ffffff!important;
+  font-weight:600;
+}
+tbody tr:nth-child(even) {background:var(--row-alt);}  /* subtle alt rows */
+table {border:1px solid var(--taupe);} 
+td, th {padding:6px 10px;}
+
+/* Numerical cells right‑aligned */
+td:nth-child(2), td:nth-child(3), td:nth-child(4){text-align:right;}
 
 /* Alert boxes */
-.stAlert.success {background:#e8f5e9; border-left:6px solid var(--bronze);} 
-.stAlert.warning {background:#fffbe5; border-left:6px solid var(--taupe);} 
+.stAlert.success{background:#f0f9f2; border-left:6px solid var(--bronze);} 
+.stAlert.warning{background:#fffbe8; border-left:6px solid var(--taupe);} 
 </style>
 """
 
@@ -143,54 +155,36 @@ cost_heat_new  = heat_new * c_heat
 # ───────────────────── Outputs ─────────────────────
 st.header("📊 Results & Savings")
 
-# ---------- Motor table ----------
 st.subheader("Motor Consumption ⚡")
+
 motor_df = pd.DataFrame(
     {
         "Existing": [fmt(motor_old_kwh), cur(cost_motor_old)],
-        "New":      [fmt(motor_new_kwh), cur(cost_motor_new)],
-        "Savings":  [fmt(motor_old_kwh - motor_new_kwh),
-                     cur(cost_motor_old - cost_motor_new)],
+        "New":      [fmt(motor_new_kwh),  cur(cost_motor_new)],
+        "Savings":  [fmt(motor_old_kwh - motor_new_kwh), cur(cost_motor_old - cost_motor_new)],
     },
     index=["kWh / yr", "£ / yr"],
 )
+
 st.table(motor_df)
 
-# ---------- Cooling + Heating table ----------
+# ────────── Cooling & Heating Table ──────────
 st.subheader("Thermal Performance 🏢")
 thermal_df = pd.DataFrame(
     {
-        "Existing": [
-            fmt(cool_old),  cur(cost_cool_old),
-            fmt(heat_old),  cur(cost_heat_old)
-        ],
-        "New": [
-            fmt(cool_new),  cur(cost_cool_new),
-            fmt(heat_new),  cur(cost_heat_new)
-        ],
-        "Savings": [
-            fmt(cool_old - cool_new),  cur(cost_cool_old - cost_cool_new),
-            fmt(heat_old - heat_new),  cur(cost_heat_old - cost_heat_new)
-        ],
+        "Existing": [fmt(cool_old),  cur(cost_cool_old),  fmt(heat_old),  cur(cost_heat_old)],
+        "New":      [fmt(cool_new),  cur(cost_cool_new),  fmt(heat_new),  cur(cost_heat_new)],
+        "Savings":  [fmt(cool_old - cool_new), cur(cost_cool_old - cost_cool_new),
+                      fmt(heat_old - heat_new), cur(cost_heat_old - cost_heat_new)],
     },
-    index=[
-        "Cooling kWh / yr", "Cooling £ / yr",
-        "Heating kWh / yr", "Heating £ / yr",
-    ],
+    index=["Cooling kWh / yr", "Cooling £ / yr", "Heating kWh / yr", "Heating £ / yr"],
 )
+
 st.table(thermal_df)
 
-# ---------- Totals ----------
-energy_saved = (
-    (motor_old_kwh - motor_new_kwh)
-    + (cool_old - cool_new)
-    + (heat_old - heat_new)
-)
-cost_saved = (
-    (cost_motor_old - cost_motor_new)
-    + (cost_cool_old - cost_cool_new)
-    + (cost_heat_old - cost_heat_new)
-)
+# ────────── Totals ──────────
+energy_saved = (motor_old_kwh - motor_new_kwh) + (cool_old - cool_new) + (heat_old - heat_new)
+cost_saved   = (cost_motor_old - cost_motor_new) + (cost_cool_old - cost_cool_new) + (cost_heat_old - cost_heat_new)
 
 st.markdown(f"### 💰 **Total Annual Energy Saved:** {fmt(energy_saved)} kWh")
 st.markdown(f"### 💰 **Total Annual Cost Saved:** {cur(cost_saved)}")
@@ -200,8 +194,4 @@ if cost_saved > 0:
 else:
     st.warning("New system increases annual cost. Adjust inputs or usage assumptions.")
 
-st.caption(
-    "Monthly GHI & HDD: London St James’s Park TMY • "
-    "All £ & kWh rounded to two decimals."
-)
-
+st.caption("Monthly GHI & HDD source: London St James’s Park TMY · All £ & kWh rounded to two decimals.")
