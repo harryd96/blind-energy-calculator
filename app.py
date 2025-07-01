@@ -139,8 +139,11 @@ with st.sidebar:
             "For example, U_glass 1.2 reduced to 1.05 gives ΔU=0.15."
         )
     )
-    # automatic ΔU for new fabric
+        # automatic ΔU for new fabric
     delta_u_new = DELTA_U_FABRIC.get(fabric_key, DEFAULT["delta_u_new"])
+    st.markdown(
+        f"**ΔU with new blind closed:** {delta_u_new:.2f} W/m²K (auto-derived based on fabric selection)"
+    )
     st.markdown(
         f"**ΔU with new blind closed:** {delta_u_new:.2f} W/m²K (auto-derived based on fabric selection)"
     )", 0.0, 0.5, DEFAULT["delta_u_new"], 0.01,
