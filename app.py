@@ -143,7 +143,65 @@ cost_heat_new  = heat_new * c_heat
 # ───────────────────── Outputs ─────────────────────
 st.header("📊 Results & Savings")
 
+# ---------- Motor table ----------
 st.subheader("Motor Consumption ⚡")
-motor_df = pd.DataFrame({
-    "Existing": [fmt(motor_old_kwh), cur(cost_motor_old)],
-    "New":      [fmt(motor_new
+motor_df = pd.DataFrame(
+    {
+        "Existing": [fmt(motor_old_kwh), cur(cost_motor_old)],
+        "New":      [fmt(motor_new_kwh), cur(cost_motor_new)],
+        "Savings":  [fmt(motor_old_kwh - motor_new_kwh),
+                     cur(cost_motor_old - cost_motor_new)],
+    },
+    index=["kWh / yr", "£ / yr"],
+)
+st.table(motor_df)
+
+# ---------- Cooling + Heating table ----------
+st.subheader("Thermal Performance 🏢")
+thermal_df = pd.DataFrame(
+    {
+        "Existing": [
+            fmt(cool_old),  cur(cost_cool_old),
+            fmt(heat_old),  cur(cost_heat_old)
+        ],
+        "New": [
+            fmt(cool_new),  cur(cost_cool_new),
+            fmt(heat_new),  cur(cost_heat_new)
+        ],
+        "Savings": [
+            fmt(cool_old - cool_new),  cur(cost_cool_old - cost_cool_new),
+            fmt(heat_old - heat_new),  cur(cost_heat_old - cost_heat_new)
+        ],
+    },
+    index=[
+        "Cooling kWh / yr", "Cooling £ / yr",
+        "Heating kWh / yr", "Heating £ / yr",
+    ],
+)
+st.table(thermal_df)
+
+# ---------- Totals ----------
+energy_saved = (
+    (motor_old_kwh - motor_new_kwh)
+    + (cool_old - cool_new)
+    + (heat_old - heat_new)
+)
+cost_saved = (
+    (cost_motor_old - cost_motor_new)
+    + (cost_cool_old - cost_cool_new)
+    + (cost_heat_old - cost_heat_new)
+)
+
+st.markdown(f"### 💰 **Total Annual Energy Saved:** {fmt(energy_saved)} kWh")
+st.markdown(f"### 💰 **Total Annual Cost Saved:** {cur(cost_saved)}")
+
+if cost_saved > 0:
+    st.success("New system delivers annual cost savings under current assumptions.")
+else:
+    st.warning("New system increases annual cost. Adjust inputs or usage assumptions.")
+
+st.caption(
+    "Monthly GHI & HDD: London St James’s Park TMY • "
+    "All £ & kWh rounded to two decimals."
+)
+
