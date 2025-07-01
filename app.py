@@ -131,28 +131,30 @@ with col2:
 
 # Section 2: Energy Efficiency Savings
 st.subheader("🌡️ Energy Savings through Reduced Cooling and Heating")
-col3, col4 = st.columns(2)
-with col3:
-    st.markdown("**Cooling Performance**")
-    cooling_energy_old = effective_solar_gain_old * solar_radiation_summer * window_area * (1 / ac_efficiency) * (1 / 1000) * days_operated_per_year
-    cooling_energy_new = effective_solar_gain_new * solar_radiation_summer * window_area * (1 / ac_efficiency) * (1 / 1000) * days_operated_per_year
-    cooling_cost_old = cooling_energy_old * ac_cost_per_kwh
-    cooling_cost_new = cooling_energy_new * ac_cost_per_kwh
-    st.write(f"Existing System: {cooling_energy_old:.1f} kWh/year → £{cooling_cost_old:.2f}/year")
-    st.write(f"New System: {cooling_energy_new:.1f} kWh/year → £{cooling_cost_new:.2f}/year")
-    st.write(f"**Cooling Energy Saved**: {cooling_energy_saved_kwh:.1f} kWh/year")
-    st.write(f"**Cooling Cost Saved**: £{cooling_cost_saved:.2f}/year")
 
-with col4:
-    st.markdown("**Heating Performance**")
-    st.write(f"Existing System: {heat_loss_existing:.1f} kWh/year → £{heat_loss_existing * heating_cost_per_kwh:.2f}/year")
-    st.write(f"New System: {heat_loss_new:.1f} kWh/year → £{heat_loss_new * heating_cost_per_kwh:.2f}/year")
-    st.write(f"**Heating Energy Saved**: {heat_saving_kwh:.1f} kWh/year")
-    st.write(f"**Heating Cost Saved**: £{heating_cost_saved:.2f}/year")
+cooling_energy_old = effective_solar_gain_old * solar_radiation_summer * window_area * (1 / ac_efficiency) * (1 / 1000) * days_operated_per_year
+cooling_energy_new = effective_solar_gain_new * solar_radiation_summer * window_area * (1 / ac_efficiency) * (1 / 1000) * days_operated_per_year
+cooling_cost_old = cooling_energy_old * ac_cost_per_kwh
+cooling_cost_new = cooling_energy_new * ac_cost_per_kwh
 
+heating_energy_old = heat_loss_existing
+heating_energy_new = heat_loss_new
+heating_cost_old = heat_loss_existing * heating_cost_per_kwh
+heating_cost_new = heat_loss_new * heating_cost_per_kwh
 
-st.markdown("---")
-
+st.markdown("""
+| Category              | Existing System         | New System             | Savings                  |
+|-----------------------|--------------------------|-------------------------|---------------------------|
+| **Cooling Energy**    | {:.1f} kWh/year          | {:.1f} kWh/year         | {:.1f} kWh/year           |
+| **Cooling Cost**      | £{:.2f}/year             | £{:.2f}/year            | £{:.2f}/year              |
+| **Heating Energy**    | {:.1f} kWh/year          | {:.1f} kWh/year         | {:.1f} kWh/year           |
+| **Heating Cost**      | £{:.2f}/year             | £{:.2f}/year            | £{:.2f}/year              |
+""".format(
+    cooling_energy_old, cooling_energy_new, cooling_energy_saved_kwh,
+    cooling_cost_old, cooling_cost_new, cooling_cost_saved,
+    heating_energy_old, heating_energy_new, heat_saving_kwh,
+    heating_cost_old, heating_cost_new, heating_cost_saved
+))
 
 # Clearer summary section
 net_energy_savings = motor_energy_old - motor_energy_new + cooling_energy_saved_kwh + heat_saving_kwh
