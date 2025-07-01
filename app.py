@@ -20,11 +20,10 @@ st.set_page_config(
 
 BRAND_CSS = """
 <style>
-/* —— Umbra Dark Theme (minimal sidebar overrides) —— */
+/* —— Umbra Dark Theme (core elements only) —— */
 :root {
   --bronze:#7b7662;
   --taupe:#c7bb9b;
-  --umbra-black:#000000;
   --row-alt:#2a2a2a;
 }
 
@@ -34,15 +33,17 @@ html, body, .stApp {background:#0e0e0e; color:#ffffff;}
 h1, h2, h3 {color:var(--bronze);} 
 
 /* Tables */
- table               {border:1px solid var(--taupe);} 
- thead               {background-color:var(--bronze)!important; color:#ffffff!important; font-weight:600;}
- tbody tr:nth-child(even){background:var(--row-alt);} 
- td, th             {padding:6px 10px;}
- td:nth-child(2), td:nth-child(3), td:nth-child(4){text-align:right;}
+table               {border:1px solid var(--taupe);} 
+thead               {background-color:var(--bronze)!important; color:#ffffff!important; font-weight:600;}
+tbody tr:nth-child(even){background:var(--row-alt);} 
+td, th             {padding:6px 10px;}
+td:nth-child(2), td:nth-child(3), td:nth-child(4){text-align:right;}
 
 /* Alerts */
 .stAlert.success {background:#143d1d; border-left:6px solid var(--bronze);} 
-.stAlert.warning {background:#3d3614; border-left:6px solid var(--taupe);}
+.stAlert.warning {background:#3d3614; border-left:6px solid var(--taupe);}  
+</style>
+"""
 
 st.markdown(BRAND_CSS, unsafe_allow_html=True)
 
