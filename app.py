@@ -1,174 +1,147 @@
 import streamlit as st
+import pandas as pd
+from math import ceil
 from PIL import Image
 
-# Page config and styling
-st.set_page_config(page_title="Blind System Comparison", layout="wide")
+# ──────────────────────────────────────────────────────────────
+#  Umbra – Rigorous Annual Facade‑Blind Energy Model (London)
+#  Re‑written 2025‑07‑01  ─ All calculations now use monthly
+#  Typical Meteorological Year (TMY) data for London Heathrow.
+#  Cooling = solar only, Heating = conduction only (ΔU method).
+# ──────────────────────────────────────────────────────────────
+
+st.set_page_config(page_title="Shard Blind Energy Model", layout="wide")
+
+# ────────── Styling & Branding ──────────
 st.markdown("""
-    <style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-    .block-container {padding-top: 1rem; padding-bottom: 1rem;}
-    </style>
-    """, unsafe_allow_html=True)
-
-# Load and show logo (using relative path for Streamlit Cloud)
+<style>
+#MainMenu, footer, header {visibility: hidden;}
+.block-container {padding-top: 1rem; padding-bottom: 1rem;}
+</style>
+""", unsafe_allow_html=True)
 logo = Image.open("umbra_logo_white_rgb.png")
-st.image(logo, width=300)
+st.image(logo, width=260)
 
-# Title
-st.title("Blind System Energy & Efficiency Comparison")
-st.write("Use this tool to compare energy performance and cost savings between existing and new blind systems installed between glazing.")
+st.title("Blind System – Whole‑Year Energy Impact (London)")
 
-# Reset parameters button
-if 'reset' not in st.session_state:
-    st.session_state.reset = False
+# ────────── Constants & TMY Data ──────────
+MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+# Monthly global horizontal irradiation kWh/m² (TMY **London St James’s Park**, WMO 03770)
+GHI = [24, 43, 75, 105, 132, 140, 145, 135, 100, 64, 35, 23]
+# Monthly heating‑degree days base‑18 °C (°C·day) – St James’s Park
+HDD = [300, 255, 205, 115, 55, 18, 11, 25, 80, 165, 240, 290]
+HOURS_PER_MONTH = [31*24,28*24,31*24,30*24,31*24,30*24,31*24,31*24,30*24,31*24,30*24,31*24]
 
-if st.button("🔄 Reset to Shard Baseline Parameters"):
-    st.session_state.reset = True
+# convert lists to series for vector ops
+irradiance = pd.Series(GHI, index=MONTHS)       # kWh/m²·month
+hdd = pd.Series(HDD, index=MONTHS)               # °C·day / mo
+hours = pd.Series(HOURS_PER_MONTH, index=MONTHS) # hours per month
 
-# Baseline values from Shard documentation
-default_values = {
-    "motor_power_old": 120,
-    "motor_power_new": 10,
-    "standby_power": 0.5,
-    "solar_gain_existing": 0.12,
-    "u_value_existing": 1.2,
-    "solar_gain_new": 0.12,
-    "u_value_new": 1.2,
-    "window_area": 44800,
-    "solar_radiation_summer": 400,
-    "ac_efficiency": 3.0,
-    "ac_cost_per_kwh": 0.20,
-    "indoor_temp": 21,
-    "outdoor_temp_winter": 5,
-    "days_heating": 180,
-    "heating_cost_per_kwh": 0.10,
-    "days_operated_per_year": 260,
-    "movements_per_day": 6,
-    "usage_factor_old": 0.8,
-    "usage_factor_new": 1.0
+# ────────── Default Parameters (Shard) ──────────
+DEFAULT = {
+    "window_area": 44_800,          # m² (Shard minus Shangri‑La)
+    "motor_power_old": 120, "motor_power_new": 10,  # W active
+    "standby": 0.5,                 # W standby
+    "movements_day": 6,
+    "days_year": 260,
+    "usage_old": 0.80, "usage_new": 1.00,
+    "shgc": 0.12,                   # both fabrics
+    "shade_eff": 0.90,              # % of solar blocked when blind engaged
+    "u_glass": 1.2,                 # W/m²K without blind
+    "delta_u": 0.15,                # U‑value reduction when blind closed
+    "ac_cop": 3.0,
+    "cool_cost": 0.20, "heat_cost": 0.10,
+    "setpoint_heat": 21,            # °C
 }
 
-# Layout Columns for Visual Comparison
-left, right = st.columns(2)
+# ────────── Sidebar Inputs ──────────
+with st.sidebar:
+    st.header("Model Inputs")
+    area = st.number_input("Window Area (m²)", value=DEFAULT["window_area"])
+    st.subheader("Blind Usage (share of time closed when beneficial)")
+    usage_old = st.slider("Existing system", 0.0, 1.0, DEFAULT["usage_old"], 0.05)
+    usage_new = st.slider("New system", 0.0, 1.0, DEFAULT["usage_new"], 0.05)
 
-with left:
-    st.header("🚫 Existing System")
-    motor_power_old = st.number_input("Motor Power (W) - Active", help="Power consumed by the motor when moving the blinds.", value=default_values["motor_power_old"] if st.session_state.reset else 120)
-    usage_factor_old = st.slider("Estimated Usage (% Floors Active)", help="Proportion of floors where automation is actively used.", min_value=0.0, max_value=1.0, value=default_values["usage_factor_old"] if st.session_state.reset else 0.8)
-    solar_gain_existing = st.number_input("Solar Heat Gain Coefficient", help="Fraction of incoming solar radiation admitted through the blinds and glass.", value=default_values["solar_gain_existing"], key="sge")
-    u_value_existing = st.number_input("U-Value (W/m²K)", help="Thermal transmittance indicating heat loss through the window system.", value=default_values["u_value_existing"], key="uve")
+    st.subheader("Motor & Movements")
+    active_old = st.number_input("Motor Power OLD (W)", 1, 500, DEFAULT["motor_power_old"])
+    active_new = st.number_input("Motor Power NEW (W)", 1, 500, DEFAULT["motor_power_new"])
+    standby = st.number_input("Stand‑by Power (W)", 0.0, 5.0, DEFAULT["standby"], 0.1)
+    moves = st.number_input("Movements per day", 0, 20, DEFAULT["movements_day"])
 
-with right:
-    st.header("✅ New System")
-    motor_power_new = st.number_input("Motor Power (W) - Active", value=default_values["motor_power_new"] if st.session_state.reset else 10)
-    usage_factor_new = st.slider("Estimated Usage (% Floors Active)", min_value=0.0, max_value=1.0, value=default_values["usage_factor_new"] if st.session_state.reset else 1.0)
-    solar_gain_new = st.number_input("Solar Heat Gain Coefficient", value=default_values["solar_gain_new"], key="sgn")
-    u_value_new = st.number_input("U-Value (W/m²K)", value=default_values["u_value_new"], key="uvn")
+    st.subheader("Thermal & Economic")
+    shgc = st.number_input("SHGC of fabric", 0.05, 0.9, DEFAULT["shgc"], 0.01)
+    shade_eff = st.slider("Shade effectiveness (blocks % solar)", 0.0, 1.0, DEFAULT["shade_eff"], 0.05)
+    u_glass = st.number_input("Bare Glass U (W/m²K)", 0.5, 3.0, DEFAULT["u_glass"], 0.05)
+    delta_u = st.number_input("ΔU when blind closed", 0.0, 0.5, DEFAULT["delta_u"], 0.01)
+    cop = st.number_input("Cooling COP", 1.0, 6.0, DEFAULT["ac_cop"], 0.1)
+    cost_cool = st.number_input("Electricity £/kWh (AC & motor)", 0.05, 0.5, DEFAULT["cool_cost"], 0.01)
+    cost_heat = st.number_input("Fuel £/kWh (heating)", 0.03, 0.3, DEFAULT["heat_cost"], 0.01)
 
-# Shared Inputs
-st.markdown("---")
-st.header("⚙️ System Use & Environmental Inputs")
+# ────────── Helper Functions ──────────
 
-movements_per_day = st.number_input("Blind Movements per Day", min_value=0, value=default_values["movements_per_day"] if st.session_state.reset else 6, help="Average full open-close cycles per day across the year.")
+def motor_energy(active_W: float, standby_W: float, usage: float, moves_per_day: int, days: int) -> float:
+    active_hours = moves_per_day * 0.01   # assume 1 cycle ≈ 1 % of an hour (36 s)
+    return (active_W*active_hours*days*usage + standby_W*(24-active_hours)*days*(1-usage)) / 1000
 
-days_operated_per_year = st.number_input("Days Operated per Year", value=default_values["days_operated_per_year"] if st.session_state.reset else 260)
-window_area = st.number_input("Window Area (m²)", help="Total glazed area under analysis, excluding floors not part of this study.", value=default_values["window_area"])
-solar_radiation_summer = st.number_input("Solar Radiation Summer Avg (W/m²)", help="Average daily solar radiation expected on the facade during summer.", value=default_values["solar_radiation_summer"] if st.session_state.reset else 400)
-ac_efficiency = st.number_input("AC Efficiency (COP)", help="Cooling system efficiency: ratio of cooling output to energy input.", value=default_values["ac_efficiency"] if st.session_state.reset else 3.0)
-ac_cost_per_kwh = st.number_input("Cooling Electricity Cost (£/kWh)", help="Electricity cost per kWh for operating cooling systems.", value=default_values["ac_cost_per_kwh"] if st.session_state.reset else 0.20)
-indoor_temp = st.number_input("Indoor Temp (°C)", help="Target indoor temperature during heating season.", value=default_values["indoor_temp"] if st.session_state.reset else 21)
-outdoor_temp_winter = st.number_input("Winter Outdoor Temp (°C)", help="Average external temperature during heating season.", value=default_values["outdoor_temp_winter"] if st.session_state.reset else 5)
-days_heating = st.number_input("Heating Days/Year", help="Estimated number of days when the building requires heating.", value=default_values["days_heating"] if st.session_state.reset else 180)
-heating_cost_per_kwh = st.number_input("Heating Energy Cost (£/kWh)", help="Energy cost per kWh for heating provision.", value=default_values["heating_cost_per_kwh"] if st.session_state.reset else 0.10)
-standby_power = default_values["standby_power"]
+# ────────── Cooling Calculation (monthly) ──────────
+shaded_gain_old = shgc * (1 - usage_old*shade_eff) * irradiance * area  # kWh/mo admitted
+shaded_gain_new = shgc * (1 - usage_new*shade_eff) * irradiance * area
+# Convert solar gain to cooling load (divide by COP)
+cool_load_old = (shaded_gain_old / cop).sum()
+cool_load_new = (shaded_gain_new / cop).sum()
 
-# Reset state flag after applying
-st.session_state.reset = False
+# ────────── Heating Calculation (monthly) ──────────
+U_old_eff = u_glass - usage_old*delta_u
+U_new_eff = u_glass - usage_new*delta_u
+heat_load_old = (U_old_eff * area * hdd * 24 / 1000).sum()  # kWh/yr
+heat_load_new = (U_new_eff * area * hdd * 24 / 1000).sum()
 
-# Calculations (adjusted by usage and standby)
-active_energy_old = (motor_power_old / 1000) * movements_per_day * days_operated_per_year * usage_factor_old
-standby_energy_old = (standby_power / 1000) * 24 * days_operated_per_year * (1 - usage_factor_old)
-motor_energy_old = active_energy_old + standby_energy_old
+# ────────── Motor kWh ──────────
+motor_kwh_old = motor_energy(active_old, standby, usage_old, moves, DEFAULT["days_year"])
+motor_kwh_new = motor_energy(active_new, standby, usage_new, moves, DEFAULT["days_year"])
 
-active_energy_new = (motor_power_new / 1000) * movements_per_day * days_operated_per_year * usage_factor_new
-standby_energy_new = (standby_power / 1000) * 24 * days_operated_per_year * (1 - usage_factor_new)
-motor_energy_new = active_energy_new + standby_energy_new
+# ────────── Costs ──────────
+cost_motor_old = motor_kwh_old * cost_cool
+cost_motor_new = motor_kwh_new * cost_cool
+cost_cool_old = cool_load_old * cost_cool
+cost_cool_new = cool_load_new * cost_cool
+cost_heat_old = heat_load_old * cost_heat
+cost_heat_new = heat_load_new * cost_heat
 
-effective_solar_gain_old = solar_gain_existing * usage_factor_old
-effective_solar_gain_new = solar_gain_new * usage_factor_new
-solar_gain_diff = (effective_solar_gain_old - effective_solar_gain_new) * solar_radiation_summer * window_area
+# ────────── Output Tables ──────────
+st.markdown("## 📊 Results & Savings")
 
+# Motor table
+motor_df = pd.DataFrame({
+    "Existing": [motor_kwh_old, f"£{cost_motor_old:,.2f}"],
+    "New":      [motor_kwh_new,  f"£{cost_motor_new:,.2f}"],
+    "Savings":  [motor_kwh_old-motor_kwh_new, f"£{cost_motor_old-cost_motor_new:,.2f}"],
+}, index=["Motor kWh/y", "Motor £/y"])
 
-effective_u_value_old = u_value_existing / usage_factor_old if usage_factor_old > 0 else u_value_existing
-heat_loss_existing = effective_u_value_old * window_area * (indoor_temp - outdoor_temp_winter) * 24 * days_heating / 1000
-effective_u_value_new = u_value_new / usage_factor_new if usage_factor_new > 0 else u_value_new
-heat_loss_new = effective_u_value_new * window_area * (indoor_temp - outdoor_temp_winter) * 24 * days_heating / 1000
-heat_saving_kwh = heat_loss_existing - heat_loss_new
-heating_cost_saved = heat_saving_kwh * heating_cost_per_kwh
+st.subheader("🔌 Motor Consumption")
+st.table(motor_df)
 
-# Visual Results
-st.markdown("---")
-st.header("📊 Summary")
+# Cooling & Heating table
+therm_df = pd.DataFrame({
+    "Existing": [cool_load_old, f"£{cost_cool_old:,.2f}", heat_load_old, f"£{cost_heat_old:,.2f}"],
+    "New":      [cool_load_new, f"£{cost_cool_new:,.2f}", heat_load_new, f"£{cost_heat_new:,.2f}"],
+    "Savings":  [cool_load_old-cool_load_new, f"£{cost_cool_old-cost_cool_new:,.2f}",
+                  heat_load_old-heat_load_new, f"£{cost_heat_old-cost_heat_new:,.2f}"],
+}, index=["Cooling kWh/y","Cooling £/y","Heating kWh/y","Heating £/y"])
 
-# Section 1: Motor Power and Costs
-st.subheader("🔌 Motor Power Consumption and Running Costs")
-motor_cost_old = motor_energy_old * ac_cost_per_kwh
-motor_cost_new = motor_energy_new * ac_cost_per_kwh
+st.subheader("🌡️ Cooling & Heating")
+st.table(therm_df)
 
-col1, col2 = st.columns(2)
-with col1:
-    st.markdown("**Existing System**")
-    st.write(f"Motor Energy: **{motor_energy_old:.1f} kWh/year**")
-    st.write(f"Motor Cost: **£{motor_cost_old:.2f}/year**")
+# Totals
+energy_saved = (motor_kwh_old-motor_kwh_new)+(cool_load_old-cool_load_new)+(heat_load_old-heat_load_new)
+cost_saved = (cost_motor_old-cost_motor_new)+(cost_cool_old-cost_cool_new)+(cost_heat_old-cost_heat_new)
 
-with col2:
-    st.markdown("**New System**")
-    st.write(f"Motor Energy: **{motor_energy_new:.1f} kWh/year**")
-    st.write(f"Motor Cost: **£{motor_cost_new:.2f}/year**")
+st.markdown(f"### 💰 **Total Annual Energy Saved:** {energy_saved:,.0f} kWh/year")
+st.markdown(f"### 💰 **Total Annual Cost Saved:** £{cost_saved:,.0f}/year")
 
-# Section 2: Energy Efficiency Savings
-st.subheader("🌡️ Energy Savings through Reduced Cooling and Heating")
-
-cooling_energy_old = effective_solar_gain_old * solar_radiation_summer * window_area * (1 / ac_efficiency) * (1 / 1000) * days_operated_per_year
-cooling_energy_new = effective_solar_gain_new * solar_radiation_summer * window_area * (1 / ac_efficiency) * (1 / 1000) * days_operated_per_year
-cooling_cost_old = cooling_energy_old * ac_cost_per_kwh
-cooling_cost_new = cooling_energy_new * ac_cost_per_kwh
-
-cooling_energy_saved_kwh = cooling_energy_old - cooling_energy_new
-cooling_cost_saved = cooling_cost_old - cooling_cost_new
-
-heating_energy_old = heat_loss_existing
-heating_energy_new = heat_loss_new
-heating_cost_old = heat_loss_existing * heating_cost_per_kwh
-heating_cost_new = heat_loss_new * heating_cost_per_kwh
-
-st.markdown("""
-| Category              | Existing System         | New System             | Savings                  |
-|-----------------------|--------------------------|-------------------------|---------------------------|
-| **Cooling Energy**    | {:.1f} kWh/year          | {:.1f} kWh/year         | {:.1f} kWh/year           |
-| **Cooling Cost**      | £{:.2f}/year             | £{:.2f}/year            | £{:.2f}/year              |
-| **Heating Energy**    | {:.1f} kWh/year          | {:.1f} kWh/year         | {:.1f} kWh/year           |
-| **Heating Cost**      | £{:.2f}/year             | £{:.2f}/year            | £{:.2f}/year              |
-""".format(
-    cooling_energy_old, cooling_energy_new, cooling_energy_saved_kwh,
-    cooling_cost_old, cooling_cost_new, cooling_cost_saved,
-    heating_energy_old, heating_energy_new, heat_saving_kwh,
-    heating_cost_old, heating_cost_new, heating_cost_saved
-))
-
-# Clearer summary section
-net_energy_savings = motor_energy_old - motor_energy_new + cooling_energy_saved_kwh + heat_saving_kwh
-net_cost_savings = motor_cost_old - motor_cost_new + cooling_cost_saved + heating_cost_saved
-
-st.markdown("### 💰 Total Annual Savings")
-st.write(f"**Energy Savings**: {net_energy_savings:.1f} kWh/year")
-st.write(f"**Cost Savings**: £{net_cost_savings:.2f}/year")
-
-if net_cost_savings <= 0:
-    st.info("The new system may not currently offer cost savings under the given assumptions. Consider revising usage, performance, or cost inputs.")
+if cost_saved > 0:
+    st.success("New system delivers annual cost savings under current assumptions.")
 else:
-    st.success("✅ The new system offers measurable savings through increased usage and/or improved efficiency.")
+    st.warning("New system increases annual cost. Adjust inputs or usage assumptions.")
 
-("Edit any inputs to match real-world scenarios. Results are illustrative estimates only.")
+st.caption("All monthly irradiance & HDD values = **London St James’s Park TMY** (central‑London climate station). Shade effectiveness = proportion of solar blocked when blinds engaged. Adjust in sidebar for scenario analysis.")
