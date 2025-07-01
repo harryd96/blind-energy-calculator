@@ -106,7 +106,9 @@ active_energy_new = (motor_power_new / 1000) * movements_per_day * days_operated
 standby_energy_new = (standby_power / 1000) * 24 * days_operated_per_year * (1 - usage_factor_new)
 motor_energy_new = active_energy_new + standby_energy_new
 
-solar_gain_diff = (solar_gain_existing - solar_gain_new) * solar_radiation_summer * window_area
+effective_solar_gain_old = solar_gain_existing * usage_factor_old
+effective_solar_gain_new = solar_gain_new * usage_factor_new
+solar_gain_diff = (effective_solar_gain_old - effective_solar_gain_new) * solar_radiation_summer * window_area
 cooling_energy_saved_kwh = solar_gain_diff * (1 / ac_efficiency) * (1 / 1000) * days_operated_per_year
 cooling_cost_saved = cooling_energy_saved_kwh * ac_cost_per_kwh
 
