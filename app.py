@@ -11,7 +11,19 @@ import pandas as pd
 from PIL import Image
 
 # ───────────────────── Display Config & Brand CSS ─────────────────────
-st.set_page_config(page_title="Shard Blind Energy", layout="wide")
+st.set_page_config(
+    page_title="Shard Blind Energy",
+    layout="wide",
+    page_icon="💡",
+    initial_sidebar_state="expanded",
+    theme={
+        "primaryColor": "#7b7662",
+        "backgroundColor": "#ffffff",
+        "secondaryBackgroundColor": "#f4f4f4",
+        "textColor": "#000000",
+        "font": "sans serif"
+    }
+)
 
 BRAND_CSS = """
 <style>
