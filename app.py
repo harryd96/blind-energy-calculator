@@ -98,7 +98,7 @@ motor_energy_new = active_energy_new + standby_energy_new
 
 effective_solar_gain_old = solar_gain_existing * usage_factor_old
 effective_solar_gain_new = solar_gain_new * usage_factor_new
-solar_gain_diff = (effective_solar_gain_old - effective_solar_gain_new) * solar_radiation_summer * window_area
+solar_gain_diff = max((effective_solar_gain_old - effective_solar_gain_new) * solar_radiation_summer * window_area, 0)
 cooling_energy_saved_kwh = solar_gain_diff * (1 / ac_efficiency) * (1 / 1000) * days_operated_per_year
 cooling_cost_saved = cooling_energy_saved_kwh * ac_cost_per_kwh
 
@@ -112,31 +112,36 @@ heating_cost_saved = heat_saving_kwh * heating_cost_per_kwh
 # Visual Results
 st.markdown("---")
 st.header("📊 Summary")
-col1, col2 = st.columns(2)
 
-with col1:
-    st.subheader("Existing System")
-    st.metric("Motor Energy", f"{motor_energy_old:.1f} kWh/year")
-    st.metric("Heat Loss", f"{heat_loss_existing:.1f} kWh/year")
-
-with col2:
-    st.subheader("New System")
-    st.metric("Motor Energy", f"{motor_energy_new:.1f} kWh/year")
-    st.metric("Heat Loss", f"{heat_loss_new:.1f} kWh/year")
-
-
-
+# Section 1: Motor Power and Costs
+st.subheader("🔌 Motor Power Consumption and Running Costs")
 motor_cost_old = motor_energy_old * ac_cost_per_kwh
 motor_cost_new = motor_energy_new * ac_cost_per_kwh
 
+col1, col2 = st.columns(2)
 with col1:
-    st.metric("Motor Cost", f"£{motor_cost_old:.2f}/year")
+    st.markdown("**Existing System**")
+    st.write(f"Motor Energy: **{motor_energy_old:.1f} kWh/year**")
+    st.write(f"Motor Cost: **£{motor_cost_old:.2f}/year**")
 
 with col2:
-    st.metric("Motor Cost", f"£{motor_cost_new:.2f}/year")
+    st.markdown("**New System**")
+    st.write(f"Motor Energy: **{motor_energy_new:.1f} kWh/year**")
+    st.write(f"Motor Cost: **£{motor_cost_new:.2f}/year**")
 
+# Section 2: Energy Efficiency Savings
+st.subheader("🌡️ Energy Savings through Reduced Cooling and Heating")
+col3, col4 = st.columns(2)
+with col3:
+    st.markdown("**Cooling Energy Saved**")
+    st.write(f"{cooling_energy_saved_kwh:.1f} kWh/year")
+    st.write(f"£{cooling_cost_saved:.2f}/year")
 
-st.write(f"**Cooling Energy Saved**: {cooling_energy_saved_kwh:.1f} kWh/year")
+with col4:
+    st.markdown("**Heating Energy Saved**")
+    st.write(f"{heat_saving_kwh:.1f} kWh/year")
+    st.write(f"£{heating_cost_saved:.2f}/year")
+
 st.write(f"**Cooling Cost Saved**: £{cooling_cost_saved:.2f}/year")
 st.write(f"**Heating Energy Saved**: {heat_saving_kwh:.1f} kWh/year")
 st.write(f"**Heating Cost Saved**: £{heating_cost_saved:.2f}/year")
