@@ -1,7 +1,6 @@
-# app.py – Umbra Blind Energy Model (carbon‑aware release)
+# app.py – Umbra Blind Energy Model (carbon‑aware release)
 # -----------------------------------------------------------
-#   Whole‑Year Blind Energy Impact for The Shard, London
-#   Computes energy, cost, and CO₂ savings with relatable metrics.
+# Whole‑Year Energy, Cost & CO₂ impact for The Shard (London)
 # -----------------------------------------------------------
 
 import streamlit as st
@@ -25,7 +24,7 @@ h1, h2, h3 {color:var(--bronze);}
 table {border:1px solid var(--taupe);} 
 thead {background-color:var(--bronze)!important; color:#ffffff!important; font-weight:600;}
 tbody tr:nth-child(even){background:var(--row-alt);} 
-td, th {padding:6px 10px;}
+td, th {padding:6px 8px; font-size:0.9rem;}
 td:nth-child(2), td:nth-child(3), td:nth-child(4){text-align:right;}
 
 .stAlert.success {background:#143d1d; border-left:6px solid var(--bronze);} 
@@ -45,8 +44,8 @@ st.title("Blind System – Whole‑Year Energy Impact (London)")
 
 # ───────────────────── Climate Data ─────────────────────
 MONTHS = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-GHI  = [24,43,75,105,132,140,145,135,100,64,35,23]   # kWh/m²·month
-HDD  = [300,255,205,115,55,18,11,25,80,165,240,290]  # °C·day / month (base 18 °C)
+GHI  = [24,43,75,105,132,140,145,135,100,64,35,23]   # kWh/m²·mo
+HDD  = [300,255,205,115,55,18,11,25,80,165,240,290]  # °C·d / mo (base 18 °C)
 irradiance = pd.Series(GHI, index=MONTHS)
 hdd        = pd.Series(HDD, index=MONTHS)
 
@@ -70,8 +69,8 @@ NEW_FABRICS = {
 
 ELEC_CO2   = 0.233  # kg CO₂/kWh
 HEAT_CO2   = 0.184  # kg CO₂/kWh
-TREE_CO2   = 22      # kg CO₂ per tree·year
-FLIGHT_CO2 = 1.6     # t CO₂ per London‑NYC rtn flight
+TREE_CO2   = 22      # kg CO₂ / tree·yr
+FLIGHT_CO2 = 1.6     # t CO₂ / London‑NYC rtn flight
 
 # ───────────────────── Sidebar ─────────────────────
 with st.sidebar:
@@ -137,7 +136,40 @@ FLIGHTS_EQ     = int(round(co2_total_t / FLIGHT_CO2))
 # ───────────────────── Outputs ─────────────────────
 st.header("📊 Results & Savings")
 
-# Motor Table
 st.subheader("Motor Consumption ⚡")
-_motor_df = pd.DataFrame({
-    "Existing": [fmt(motor_old_kwh), cur(cost_motor
+motor_df = pd.DataFrame({
+    "Existing": [fmt(motor_old_kwh), cur(cost_motor_old)],
+    "New":      [fmt(motor_new_kwh), cur(cost_motor_new)],
+    "Savings":  [fmt(motor_old_kwh - motor_new_kwh), cur(cost_motor_old - cost_motor_new)]
+}, index=["kWh / yr", "£ / yr"])
+
+st.table(motor_df)
+
+st.subheader("Thermal Performance 🏢")
+thermal_df = pd.DataFrame({
+    "Existing": [fmt(cool_old), cur(cost_cool_old), fmt(heat_old), cur(cost_heat_old)],
+    "New":      [fmt(cool_new), cur(cost_cool_new), fmt(heat_new), cur(cost_heat_new)],
+    "Savings":  [fmt(cool_old - cool_new), cur(cost_cool_old - cost_cool_new), fmt(heat_old - heat_new), cur(cost_heat_old - cost_heat_new)]
+}, index=["Cooling kWh / yr", "Cooling £ / yr", "Heating kWh / yr", "Heating £ / yr"])
+
+st.table(thermal_df)
+
+energy_saved = (motor_old_kwh - motor_new_kwh) + (cool_old - cool_new) + (heat_old - heat_new)
+cost_saved = (cost_motor_old - cost_motor_new) + (cost_cool_old - cost_cool_new) + (cost_heat_old - cost_heat_new)
+
+st.markdown(f"### 💰 **Total Annual Energy Saved:** {fmt(energy_saved)} kWh")
+st.markdown(f"### 💰 **Total Annual Cost Saved:** {cur(cost_saved)}")
+
+if cost_saved > 0:
+    st.success("New system delivers annual cost savings under current assumptions.")
+else:
+    st.warning("New system increases annual cost. Adjust inputs or usage assumptions.")
+
+# ───────────────────── Carbon Messaging ─────────────────────
+st.markdown("---")
+st.subheader("🌍 Carbon Impact")
+st.markdown(f"**Total CO₂ Saved:** ≈ {fmt(co2_total_kg)} kg ({fmt(co2_total_t)} t)")
+st.markdown(f"🌳 Equivalent to saving emissions from ~{TREES_EQ} mature trees")
+st.markdown(f"✈️ Or avoiding ~{FLIGHTS_EQ} London–NYC round‑trip flights")
+
+st.caption("Monthly GHI & HDD source: London St James’s Park TMY · All £, kWh & CO₂ rounded to two decimals.")
