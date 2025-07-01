@@ -13,7 +13,7 @@ st.markdown("""
     """, unsafe_allow_html=True)
 
 # Load and show logo
-logo = Image.open("/mnt/data/umbra_logo_white_rgb.png")
+logo = Image.open("umbra_logo_white_rgb.png")
 st.image(logo, width=300)
 
 # Title
