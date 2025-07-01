@@ -150,4 +150,19 @@ st.write(f"**Heating Energy Saved**: {heat_saving_kwh:.1f} kWh/year")
 st.write(f"**Heating Cost Saved**: £{heating_cost_saved:.2f}/year")
 
 st.markdown("---")
-st.caption("Edit any inputs to match real-world scenarios. Results are illustrative estimates only.")
+
+
+# Clearer summary section
+net_energy_savings = motor_energy_old - motor_energy_new + cooling_energy_saved_kwh + heat_saving_kwh
+net_cost_savings = motor_cost_old - motor_cost_new + cooling_cost_saved + heating_cost_saved
+
+st.markdown("### 💰 Total Annual Savings")
+st.write(f"**Energy Savings**: {net_energy_savings:.1f} kWh/year")
+st.write(f"**Cost Savings**: £{net_cost_savings:.2f}/year")
+
+if net_cost_savings <= 0:
+    st.info("The new system may not currently offer cost savings under the given assumptions. Consider revising usage, performance, or cost inputs.")
+else:
+    st.success("✅ The new system offers measurable savings through increased usage and/or improved efficiency.")
+
+("Edit any inputs to match real-world scenarios. Results are illustrative estimates only.")
