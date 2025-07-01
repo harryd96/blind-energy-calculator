@@ -53,6 +53,12 @@ NEW_FABRICS = {
     "Umbra White‑Back Screen – SHGC 0.34": 0.34,
     "Umbra Standard Screen – SHGC 0.45": 0.45,
 }
+# Optional: mapping of fabric to its ΔU impact (reduction in U-value) based on fabric construction
+DELTA_U_FABRIC = {
+    "Umbra Alu‑Back Screen – SHGC 0.27": 0.20,  # e.g. heavier backed fabric
+    "Umbra White‑Back Screen – SHGC 0.34": 0.15,
+    "Umbra Standard Screen – SHGC 0.45": 0.10,
+}
 
 ELEC_CO2 = 0.233  # kg CO₂/kWh
 HEAT_CO2 = 0.184  # kg CO₂/kWh
@@ -106,12 +112,11 @@ with st.sidebar:
     st.markdown(
         f"**Existing blinds:** Hexel Screen Vision 5 % (SHGC {SHGC_OLD})"
     )
-    shgc_new = NEW_FABRICS[
-        st.selectbox(
-            "New blind fabric", list(NEW_FABRICS.keys()),
-            help="Select the new fabric option by Solar Heat Gain Coefficient (SHGC). Lower SHGC means less solar heat transmitted."
-        )
-    ]
+    fabric_key = st.selectbox(
+        "New blind fabric", list(NEW_FABRICS.keys()),
+        help="Select the new fabric option by Solar Heat Gain Coefficient (SHGC). Lower SHGC means less solar heat transmitted."
+    )
+    shgc_new = NEW_FABRICS[fabric_key]
 
     st.subheader("Thermal & Economic")
     shade_eff = st.slider(
@@ -126,7 +131,7 @@ with st.sidebar:
             "double glazing ~1.2)."
         )
     )
-    # Now separate ΔU inputs for old and new
+    # Separate ΔU for existing and auto-derived for new based on fabric
     delta_u_old = st.number_input(
         "ΔU with existing blind closed (W/m²K)", 0.0, 0.5, DEFAULT["delta_u_old"], 0.01,
         help=(
@@ -134,8 +139,11 @@ with st.sidebar:
             "For example, U_glass 1.2 reduced to 1.05 gives ΔU=0.15."
         )
     )
-    delta_u_new = st.number_input(
-        "ΔU with new blind closed (W/m²K)", 0.0, 0.5, DEFAULT["delta_u_new"], 0.01,
+    # automatic ΔU for new fabric
+    delta_u_new = DELTA_U_FABRIC.get(fabric_key, DEFAULT["delta_u_new"])
+    st.markdown(
+        f"**ΔU with new blind closed:** {delta_u_new:.2f} W/m²K (auto-derived based on fabric selection)"
+    )", 0.0, 0.5, DEFAULT["delta_u_new"], 0.01,
         help=(
             "Reduction in U-value when the new blind fabric is closed. "
             "Different fabrics may yield different ΔU based on material and backing."
